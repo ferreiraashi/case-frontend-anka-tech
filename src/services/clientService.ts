@@ -9,15 +9,24 @@ export interface Client {
   updatedAt?: string;
 }
 
-// Função para buscar todos os clientes
+
+export interface CreateClientPayload {
+  name: string;
+  email: string;
+  status: 'ativo' | 'inativo';
+}
+
 export const fetchClients = async (): Promise<Client[]> => {
   const response = await apiClient.get<Client[]>('/clients');
   return response.data;
 };
 
-// Função para buscar um cliente específico por ID
-// (Será útil para a edição mais tarde, mas bom já ter)
 export const fetchClientById = async (id: string): Promise<Client> => {
   const response = await apiClient.get<Client>(`/clients/${id}`);
+  return response.data;
+};
+
+export const createClient = async (clientData: CreateClientPayload): Promise<Client> => {
+  const response = await apiClient.post<Client>('/clients', clientData);
   return response.data;
 };
