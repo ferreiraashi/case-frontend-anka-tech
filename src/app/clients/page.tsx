@@ -1,10 +1,25 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { fetchClients, Client } from "@/services/clientService";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { fetchClients, Client, deleteClient } from "@/services/clientService";
 import Link from "next/link";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function ClientsPage() {
+  const queryClient = useQueryClient();
   const {
     data: clients,
     isLoading,
@@ -14,6 +29,21 @@ export default function ClientsPage() {
     queryKey: ["clients"],
     queryFn: fetchClients,
   });
+
+  const deleteMutation = useMutation<void, Error, string>({
+    mutationFn: deleteClient,
+    onSuccess: () => {
+      toast.success("Cliente excluído com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+    },
+    onError: (err) => {
+      toast.error(err.message || "Erro ao excluir cliente.");
+    },
+  });
+
+  const handleDeleteClient = (clientId: string) => {
+    deleteMutation.mutate(clientId);
+  };
 
   if (isLoading) {
     return (
@@ -31,7 +61,6 @@ export default function ClientsPage() {
         <p>
           Erro ao carregar clientes: {error?.message || "Erro desconhecido"}
         </p>
-        {/* Você pode querer adicionar um botão para tentar novamente aqui */}
       </div>
     );
   }
@@ -40,11 +69,8 @@ export default function ClientsPage() {
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Clientes</h1>
-        <Link
-          href="/clients/new"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Adicionar Novo Cliente
+        <Link href="/clients/new">
+          <Button>Adicionar Novo Cliente</Button>{" "}
         </Link>
       </div>
 
@@ -87,12 +113,41 @@ export default function ClientsPage() {
                       {client.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Link href={`/clients/${client.id}/edit`} legacyBehavior>
-                      <a className="text-indigo-600 hover:text-indigo-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    <Link
+                      href={`/clients/${client.id}/edit`}
+                    >
+                      <Button variant="outline" size="sm">
                         Editar
-                      </a>
+                      </Button>
                     </Link>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="sm">
+                          Excluir
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Confirmar Exclusão
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Tem certeza que deseja excluir o cliente "
+                            {client.name}"? Esta ação não pode ser desfeita.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteClient(client.id)}
+                            className="bg-red-600 hover:bg-red-700" 
+                          >
+                            Confirmar Exclusão
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </td>
                 </tr>
               ))}

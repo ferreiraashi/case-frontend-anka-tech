@@ -1,12 +1,13 @@
+// frontend/src/app/clients/[id]/edit/page.tsx
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from "sonner";
-import { AxiosError } from "axios";
-
+import { AxiosError } from 'axios';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,36 +26,55 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { clientFormSchema, ClientFormData } from "@/schemas/clientSchemas";
-import { createClient, CreateClientPayload } from "@/services/clientService";
+import { clientFormSchema, ClientFormData } from '@/schemas/clientSchemas';
+import { fetchClientById, updateClient, UpdateClientPayload, Client } from '@/services/clientService';
 
-export default function NewClientPage() {
-  const router = useRouter();
-  const queryClient = useQueryClient();
+export default function EditClientPage() {
+  const router = useRouter(); //
+  const queryClient = useQueryClient(); // 
+  const routeParams = useParams<{ id: string }>();
+  const clientId = routeParams.id;
+
+  const { data: client, isLoading: isLoadingClient, isError: isErrorClient, error: clientError } = useQuery<Client, Error>({
+    queryKey: ['client', clientId],
+    queryFn: () => fetchClientById(clientId),
+    enabled: !!clientId,
+  });
 
   const form = useForm<ClientFormData>({
     resolver: zodResolver(clientFormSchema),
     defaultValues: {
       name: "",
       email: "",
-      status: undefined,
     },
   });
 
-  const mutation = useMutation<unknown, Error, CreateClientPayload>({
-    mutationFn: createClient,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["clients"] });
-      toast.success("Cliente cadastrado com sucesso!");
-      router.push("/clients");
+  useEffect(() => {
+    if (client) {
+      form.reset({
+        name: client.name,
+        email: client.email,
+        status: client.status,
+      });
+    }
+  }, [client, form]);
+
+
+  const mutation = useMutation<Client, Error, UpdateClientPayload>({
+    mutationFn: (data) => updateClient(clientId, data),
+    onSuccess: (updatedClient) => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      queryClient.invalidateQueries({ queryKey: ['client', clientId] });
+      queryClient.setQueryData(['client', clientId], updatedClient);
+
+      toast.success("Cliente atualizado com sucesso!");
+      router.push('/clients');
     },
     onError: (error) => {
-      console.error("Erro ao criar cliente:", error);
-      let errorMessage = "Erro ao criar cliente. Tente novamente.";
-
+      console.error("Erro ao atualizar cliente:", error);
+      let errorMessage = "Erro ao atualizar cliente. Tente novamente.";
       if (error instanceof AxiosError && error.response?.status === 409) {
-        errorMessage =
-          error.response?.data?.message || "Este email já está em uso.";
+        errorMessage = error.response?.data?.message || "Este email já está em uso por outro cliente.";
         form.setError("email", {
           type: "manual",
           message: errorMessage,
@@ -74,9 +94,15 @@ export default function NewClientPage() {
     mutation.mutate(data);
   }
 
+  if (isLoadingClient) return <div className="container mx-auto p-4"><p>Carregando dados do cliente...</p></div>;
+  if (isErrorClient) return <div className="container mx-auto p-4"><p>Erro ao carregar dados do cliente: {clientError?.message}</p></div>;
+  if (!client && !isLoadingClient) return <div className="container mx-auto p-4"><p>Cliente não encontrado.</p></div>;
+  if (!client) return <div className="container mx-auto p-4"><p>Carregando...</p></div>;
+
+
   return (
     <div className="container mx-auto p-4 max-w-2xl">
-      <h1 className="text-3xl font-bold mb-6">Adicionar Novo Cliente</h1>
+      <h1 className="text-3xl font-bold mb-6">Editar Cliente: {client?.name || 'Carregando...'}</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
@@ -100,11 +126,7 @@ export default function NewClientPage() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="email@example.com"
-                    {...field}
-                  />
+                  <Input type="email" placeholder="email@example.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -117,10 +139,7 @@ export default function NewClientPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Status</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value} 
-                >
+                <Select onValueChange={field.onChange} value={field.value || ""}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione o status" />
@@ -141,8 +160,8 @@ export default function NewClientPage() {
             </p>
           )}
 
-          <Button type="submit" disabled={mutation.isPending}>
-            {mutation.isPending ? "Salvando..." : "Salvar Cliente"}
+          <Button type="submit" disabled={mutation.isPending || isLoadingClient}> 
+            {mutation.isPending ? 'Salvando alterações...' : 'Salvar Alterações'}
           </Button>
         </form>
       </Form>
