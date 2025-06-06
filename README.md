@@ -2,7 +2,7 @@
 
 Este repositório contém o código-fonte do frontend da aplicação de gerenciamento de clientes, desenvolvida como um case técnico para a Anka Tech. 
 
-]O frontend é construído com Next.js e React, utilizando TypeScript, Tailwind CSS para estilização e ShadCN/UI para componentes. 
+O frontend é construído com Next.js e React, utilizando TypeScript, Tailwind CSS para estilização e ShadCN/UI para componentes. 
 
 ## Tecnologias Utilizadas
 * Next.js, React, TypeScript, Tailwind CSS, ShadCN/UI
