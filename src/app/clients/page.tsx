@@ -114,9 +114,12 @@ export default function ClientsPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <Link
-                      href={`/clients/${client.id}/edit`}
-                    >
+                    <Link href={`/clients/${client.id}/allocations`}>
+                      <Button variant="outline" size="sm">
+                        Alocações
+                      </Button>
+                    </Link>
+                    <Link href={`/clients/${client.id}/edit`}>
                       <Button variant="outline" size="sm">
                         Editar
                       </Button>
@@ -141,7 +144,7 @@ export default function ClientsPage() {
                           <AlertDialogCancel>Cancelar</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleDeleteClient(client.id)}
-                            className="bg-red-600 hover:bg-red-700" 
+                            className="bg-red-600 hover:bg-red-700"
                           >
                             Confirmar Exclusão
                           </AlertDialogAction>

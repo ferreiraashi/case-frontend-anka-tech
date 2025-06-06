@@ -1,4 +1,3 @@
-// frontend/src/app/clients/[id]/edit/page.tsx
 "use client";
 
 import { useEffect } from 'react';
@@ -29,6 +28,7 @@ import {
 import { clientFormSchema, ClientFormData } from '@/schemas/clientSchemas';
 import { fetchClientById, updateClient, UpdateClientPayload, Client } from '@/services/clientService';
 
+
 export default function EditClientPage() {
   const router = useRouter(); //
   const queryClient = useQueryClient(); // 
@@ -41,6 +41,7 @@ export default function EditClientPage() {
     enabled: !!clientId,
   });
 
+
   const form = useForm<ClientFormData>({
     resolver: zodResolver(clientFormSchema),
     defaultValues: {
@@ -48,6 +49,7 @@ export default function EditClientPage() {
       email: "",
     },
   });
+
 
   useEffect(() => {
     if (client) {
@@ -101,7 +103,7 @@ export default function EditClientPage() {
 
 
   return (
-    <div className="container mx-auto p-4 max-w-2xl">
+    <div className="container mx-auto p-4 max-w-4xl">
       <h1 className="text-3xl font-bold mb-6">Editar Cliente: {client?.name || 'Carregando...'}</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -164,7 +166,8 @@ export default function EditClientPage() {
             {mutation.isPending ? 'Salvando alterações...' : 'Salvar Alterações'}
           </Button>
         </form>
-      </Form>
+      </Form>     
     </div>
+    
   );
 }

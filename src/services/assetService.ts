@@ -1,6 +1,7 @@
 import apiClient from '@/lib/axios';
 
 export interface Asset {
+  id: string
   name: string;
   currentValue: number;
 }
