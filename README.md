@@ -19,7 +19,7 @@ O frontend é construído com Next.js e React, utilizando TypeScript, Tailwind C
 
 1.  **Clone o repositório:**
     ```bash
-    git clone [https://github.com/SEU-USUARIO/SEU-REPO-FRONTEND.git](https://github.com/SEU-USUARIO/SEU-REPO-FRONTEND.git)
+    git clone https://github.com/ferreiraashi/case-frontend-anka-tech.git
     cd SEU-REPO-FRONTEND
     ```
 
