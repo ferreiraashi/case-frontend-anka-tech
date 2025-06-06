@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchClients, Client, deleteClient } from "@/services/clientService";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useRouter } from 'next/navigation'; 
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 export default function ClientsPage() {
+  const router = useRouter(); 
   const queryClient = useQueryClient();
   const {
     data: clients,
@@ -67,6 +69,13 @@ export default function ClientsPage() {
 
   return (
     <div className="container mx-auto p-4">
+      <Button
+        variant="outline"
+        onClick={() => router.push("/")}
+        className="mb-6"
+      >
+        &larr; Voltar para home
+      </Button>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Clientes</h1>
         <Link href="/clients/new">

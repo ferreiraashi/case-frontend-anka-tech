@@ -76,6 +76,13 @@ export default function NewClientPage() {
 
   return (
     <div className="container mx-auto p-4 max-w-2xl">
+      <Button
+        variant="outline"
+        onClick={() => router.push("/clients")}
+        className="mb-6"
+      >
+        &larr; Voltar para Clientes
+      </Button>
       <h1 className="text-3xl font-bold mb-6">Adicionar Novo Cliente</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -119,7 +126,7 @@ export default function NewClientPage() {
                 <FormLabel>Status</FormLabel>
                 <Select
                   onValueChange={field.onChange}
-                  defaultValue={field.value} 
+                  defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>

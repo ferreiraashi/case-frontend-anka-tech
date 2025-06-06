@@ -2,8 +2,11 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { fetchAssets, Asset } from '@/services/assetService';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation'; 
 
 export default function AssetsPage() {
+  const router = useRouter(); 
   const { data: assets, isLoading, isError, error } = useQuery<Asset[], Error>({
     queryKey: ['assets'],
     queryFn: fetchAssets,
@@ -29,6 +32,13 @@ export default function AssetsPage() {
 
   return (
     <div className="container mx-auto p-4">
+      <Button
+        variant="outline"
+        onClick={() => router.push("/")}
+        className="mb-6"
+      >
+        &larr; Voltar para home
+      </Button>
       <h1 className="text-2xl font-bold mb-4">Ativos Financeiros</h1>
       {assets && assets.length > 0 ? (
         <ul className="space-y-2">

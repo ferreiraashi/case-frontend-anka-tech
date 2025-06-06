@@ -30,8 +30,8 @@ import { fetchClientById, updateClient, UpdateClientPayload, Client } from '@/se
 
 
 export default function EditClientPage() {
-  const router = useRouter(); //
-  const queryClient = useQueryClient(); // 
+  const router = useRouter(); 
+  const queryClient = useQueryClient(); 
   const routeParams = useParams<{ id: string }>();
   const clientId = routeParams.id;
 
@@ -104,6 +104,13 @@ export default function EditClientPage() {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
+      <Button
+        variant="outline"
+        onClick={() => router.push("/clients")}
+        className="mb-6"
+      >
+        &larr; Voltar para Clientes
+      </Button>
       <h1 className="text-3xl font-bold mb-6">Editar Cliente: {client?.name || 'Carregando...'}</h1>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

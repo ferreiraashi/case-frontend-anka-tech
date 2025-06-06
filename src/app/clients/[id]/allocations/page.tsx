@@ -211,7 +211,7 @@ export default function AllocationsPage() {
                     <FormItem>
                       <FormLabel>Quantidade</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="0" {...field} />
+                        <Input type="number" placeholder="0" min={0} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
