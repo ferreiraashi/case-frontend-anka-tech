@@ -11,7 +11,7 @@ O frontend é construído com Next.js e React, utilizando TypeScript, Tailwind C
 * Axios (para requisições HTTP) 
 
 ## Pré-requisitos
-* **Node.js** e **npm**
+* **Node.js v22 + ** e **npm**
 
 ## Como Executar
 
